@@ -44,7 +44,7 @@ class DatasetCucumber(Dataset):
         self.n_images = len(self.cfg['frames'])
         print(os.path.join(self.base_dir, self.cfg['frames'][0]['file_path'])) 
         # Determine resolution & aspect ratio
-        self.resolution = _load_img(os.path.join(self.base_dir, self.cfg['frames'][0]['file_path'])).shape[0:2]
+        self.resolution = _load_img(os.path.join(self.base_dir, self.cfg['frames'][0]['file_path'][:-4])).shape[0:2]
         self.aspect = self.resolution[1] / self.resolution[0]
 
 
