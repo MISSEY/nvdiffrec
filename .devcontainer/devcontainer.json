@@ -1,0 +1,4 @@
+{
+    "image": "smishra03/nvdiffrec",
+    "runArgs": ["--privileged","--gpus=all","--shm-size=2g","--runtime=nvidia"],
+  }

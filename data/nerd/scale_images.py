@@ -17,7 +17,7 @@ import torch
 
 res = [512, 512]
 
-datasets = ['ethiopianHead', 'moldGoldCape']
+datasets = ['/mnt/d/projects/nvdiffrec/fotress']
 folders  = ['images', 'masks']
 
 for dataset in datasets:

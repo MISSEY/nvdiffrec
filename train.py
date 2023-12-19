@@ -21,6 +21,7 @@ import xatlas
 from dataset.dataset_mesh import DatasetMesh
 from dataset.dataset_nerf import DatasetNERF
 from dataset.dataset_llff import DatasetLLFF
+from dataset.dataset_nerf import DatasetCucumber
 
 # Import topology / geometry trainers
 from geometry.dmtet import DMTetGeometry
@@ -559,7 +560,7 @@ if __name__ == "__main__":
 
     os.makedirs(FLAGS.out_dir, exist_ok=True)
 
-    glctx = dr.RasterizeGLContext()
+    glctx = dr.RasterizeCudaContext()
 
     # ==============================================================================================
     #  Create data pipeline
@@ -575,6 +576,12 @@ if __name__ == "__main__":
         elif os.path.isfile(os.path.join(FLAGS.ref_mesh, 'transforms_train.json')):
             dataset_train    = DatasetNERF(os.path.join(FLAGS.ref_mesh, 'transforms_train.json'), FLAGS, examples=(FLAGS.iter+1)*FLAGS.batch)
             dataset_validate = DatasetNERF(os.path.join(FLAGS.ref_mesh, 'transforms_test.json'), FLAGS)
+        
+        elif os.path.isfile(os.path.join(FLAGS.ref_mesh, 'transforms.json')):
+            print(os.path.join(FLAGS.ref_mesh, 'transforms.json'))
+            dataset_train    = DatasetCucumber(os.path.join(FLAGS.ref_mesh, 'transforms.json'), FLAGS, examples=(FLAGS.iter+1)*FLAGS.batch)
+            dataset_validate = DatasetCucumber(os.path.join(FLAGS.ref_mesh, 'transforms.json'), FLAGS)
+
 
     # ==============================================================================================
     #  Create env light with trainable parameters
