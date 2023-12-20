@@ -4,3 +4,7 @@ cucumber/
 cucumber.zip
 nerf_synthetic.zip
 *.pyc
+data/nerf_synthetic/
+fotress.zip
+testscene.zip
+testscene/

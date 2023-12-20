@@ -33,6 +33,19 @@ def _load_img(path):
         img = torch.tensor(img, dtype=torch.float32)
     return img
 
+def _load_cucumber_img_mask(path):
+    files = glob.glob(path+'.*')
+    assert len(files) > 0, "Tried to find image file for: %s, but found 0 files" % (path)
+    img = util.load_image_raw(files[0])
+    mask = util.load_image_raw(files[0].replace("images","masks"))
+    img = np.dstack((img,mask))
+    if img.dtype != np.float32: # LDR image
+        img = torch.tensor(img / 255, dtype=torch.float32)
+        img[..., 0:3] = util.srgb_to_rgb(img[..., 0:3])
+    else:
+        img = torch.tensor(img, dtype=torch.float32)
+    return img
+
 class DatasetCucumber(Dataset):
     def __init__(self, cfg_path, FLAGS, examples=None):
         self.FLAGS = FLAGS
@@ -44,7 +57,7 @@ class DatasetCucumber(Dataset):
         self.n_images = len(self.cfg['frames'])
         print(os.path.join(self.base_dir, self.cfg['frames'][0]['file_path'])) 
         # Determine resolution & aspect ratio
-        self.resolution = _load_img(os.path.join(self.base_dir, self.cfg['frames'][0]['file_path'][:-4])).shape[0:2]
+        self.resolution = _load_cucumber_img_mask(os.path.join(self.base_dir, self.cfg['frames'][0]['file_path'][:-4])).shape[0:2]
         self.aspect = self.resolution[1] / self.resolution[0]
 
 
@@ -63,7 +76,7 @@ class DatasetCucumber(Dataset):
         proj   = util.perspective(fovy, self.aspect, self.FLAGS.cam_near_far[0], self.FLAGS.cam_near_far[1])
 
         # Load image data and modelview matrix
-        img    = _load_img(os.path.join(self.base_dir, cfg['frames'][idx]['file_path']))
+        img    = _load_cucumber_img_mask(os.path.join(self.base_dir, cfg['frames'][idx]['file_path'][:-4]))
         mv     = torch.linalg.inv(torch.tensor(cfg['frames'][idx]['transform_matrix'], dtype=torch.float32))
         mv     = mv @ util.rotate_x(-np.pi / 2)
         campos = torch.linalg.inv(mv)[:3, 3]
